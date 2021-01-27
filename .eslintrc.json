@@ -36,6 +36,7 @@
     "no-use-before-define": "off",
     "no-confusing-arrow": "off",
     "react/prop-types": "off",
+    "operator-linebreak": "off",
     "no-unused-vars":"off",
     "arrow-parens": "off",
     "camelcase": "off",

@@ -20,6 +20,7 @@ import {
   WrapperComment,
   Button,
   LoadContainer,
+  TooltipContainer,
 } from './styles';
 
 interface Type {
@@ -50,7 +51,7 @@ const Dashboard: React.FC = () => {
     <Container>
       <Header>
         <div>
-          <h1>Post Item</h1>
+          <h1>TDSA</h1>
 
           <Button onClick={handleModal}>
             <FiPlus size={20} />
@@ -84,14 +85,18 @@ const Dashboard: React.FC = () => {
                           type="button"
                           onClick={() => handleDeleteItem(post.id)}
                         >
-                          <FiDelete size={20} />
+                          <TooltipContainer title="Deletar post">
+                            <FiDelete size={20} />
+                          </TooltipContainer>
                         </button>
 
                         <button
                           type="button"
                           onClick={() => handleEditPost(post.id)}
                         >
-                          <FiEdit3 size={20} />
+                          <TooltipContainer title="Editar post">
+                            <FiEdit3 size={20} />
+                          </TooltipContainer>
                         </button>
                       </WrapperButton>
                     </Background>

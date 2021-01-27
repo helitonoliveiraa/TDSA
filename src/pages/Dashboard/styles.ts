@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components';
 import { AppBar, Table } from '@material-ui/core';
 import { lighten, shade } from 'polished';
 import CustomButton from '../../components/Button';
-import Loading from '../../components/Loading';
+import Tooltip from '../../components/Tooltip';
 
 const backgroundPost = css`
   padding: 1rem;
@@ -32,6 +32,7 @@ export const Button = styled(CustomButton)`
   ${({ theme }) => css`
     background: transparent;
     border: 0.2rem solid ${lighten(0.2, theme.colors.white)};
+    padding: 0.6rem 1rem;
 
     &:hover {
       background: ${lighten(0.2, theme.colors.white)};
@@ -120,7 +121,7 @@ export const WrapperButton = styled.div`
       height: 4rem;
       background: transparent;
 
-      > svg {
+      svg {
         color: ${theme.colors.red};
       }
 
@@ -180,4 +181,10 @@ export const LoadContainer = styled.span`
   margin: 1rem auto 0;
   width: 10rem;
   height: 10rem;
+`;
+
+export const TooltipContainer = styled(Tooltip)`
+  width: 2rem;
+  height: 2rem;
+  margin-left: 1.6rem;
 `;

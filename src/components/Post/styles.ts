@@ -95,7 +95,7 @@ export const CloseButton = styled(CustomButton)`
     background: transparent;
     border: 0.2rem solid ${lighten(0.1, theme.colors.red)};
     color: ${lighten(0.1, theme.colors.red)};
-    padding: 0.5rem 1rem;
+    padding: 0.4rem 1rem;
 
     &:hover {
       background: ${lighten(0.1, theme.colors.red)};
