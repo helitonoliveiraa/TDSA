@@ -1,4 +1,3 @@
-/* eslint-disable operator-linebreak */
 import React, { useCallback, useState } from 'react';
 import { FiDelete, FiEdit3, FiPlus } from 'react-icons/fi';
 
@@ -23,15 +22,8 @@ import {
   TooltipContainer,
 } from './styles';
 
-interface Type {
-  type: 'editing' | 'insertion';
-}
-
 const Dashboard: React.FC = () => {
-  // eslint-disable-next-line prettier/prettier
-  const {
-    posts, comments, handleDeleteItem, handleEdit, loading,
-  } = useData();
+  const { posts, comments, handleDeleteItem, handleEdit, loading } = useData();
   const [type, setType] = useState('insertion');
   const [open, setOpen] = useState(false);
   const handleModal = useCallback(() => {

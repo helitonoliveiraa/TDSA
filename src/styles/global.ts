@@ -8,8 +8,6 @@ export default createGlobalStyle`
     box-sizing: border-box;
   }
 
-
-
   html {
     font-size: 62.5%; /* 1rem to equal 10px */
   }

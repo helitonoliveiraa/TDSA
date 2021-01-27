@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 import styled, { css } from 'styled-components';
 
 export const Container = styled.div`
