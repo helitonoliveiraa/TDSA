@@ -5,6 +5,7 @@ import { FiDelete, FiEdit3, FiPlus } from 'react-icons/fi';
 import { useData } from '../../Context/index';
 
 import Post from '../../components/Post';
+import Loading from '../../components/Loading';
 
 import {
   Container,
@@ -18,6 +19,7 @@ import {
   WrapperButton,
   WrapperComment,
   Button,
+  LoadContainer,
 } from './styles';
 
 interface Type {
@@ -27,7 +29,7 @@ interface Type {
 const Dashboard: React.FC = () => {
   // eslint-disable-next-line prettier/prettier
   const {
-    posts, comments, handleDeleteItem, handleEdit,
+    posts, comments, handleDeleteItem, handleEdit, loading,
   } = useData();
   const [type, setType] = useState('insertion');
   const [open, setOpen] = useState(false);
@@ -95,27 +97,33 @@ const Dashboard: React.FC = () => {
                     </Background>
                   </div>
 
-                  {comments.map(comment => {
-                    if (post.id === comment.postId) {
-                      return (
-                        <WrapperComment
-                          key={`${comment.id + Math.random() * 10}`}
-                        >
-                          <img
-                            src={`https://ui-avatars.com/api/?name=${comment.name}`}
-                            alt={comment.name}
-                          />
+                  {!loading ? (
+                    comments.map(comment => {
+                      if (post.id === comment.postId) {
+                        return (
+                          <WrapperComment
+                            key={`${comment.id + Math.random() * 10}`}
+                          >
+                            <img
+                              src={`https://ui-avatars.com/api/?name=${comment.name}`}
+                              alt={comment.name}
+                            />
 
-                          <div>
-                            <strong>{comment.name}</strong>
-                            <span>{comment.email}</span>
-                            <p>{comment.body}</p>
-                          </div>
-                        </WrapperComment>
-                      );
-                    }
-                    return null;
-                  })}
+                            <div>
+                              <strong>{comment.name}</strong>
+                              <span>{comment.email}</span>
+                              <p>{comment.body}</p>
+                            </div>
+                          </WrapperComment>
+                        );
+                      }
+                      return null;
+                    })
+                  ) : (
+                    <LoadContainer>
+                      <Loading />
+                    </LoadContainer>
+                  )}
                 </td>
               </TableLine>
             ))}

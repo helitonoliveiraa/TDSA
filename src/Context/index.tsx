@@ -33,6 +33,7 @@ interface PostData {
   userId: number;
 }
 interface PostContextData {
+  loading: boolean;
   posts: PostData[];
   comments: Comments[];
   tempor: PostData;
@@ -46,9 +47,11 @@ interface PostContextData {
 const PostContext = createContext<PostContextData>({} as PostContextData);
 
 const DataProvider: React.FC = ({ children }) => {
+  const [loading, setLoading] = useState(true);
+
   const [tempor, setTempor] = useState<PostData>({} as PostData);
   const [comments, setComments] = useState<Comments[]>([]);
-  const [data, setData] = useState<PostData[]>(() => {
+  const [postsData, setPostsData] = useState<PostData[]>(() => {
     const posts = localStorage.getItem('@test:post');
 
     if (posts) {
@@ -58,15 +61,12 @@ const DataProvider: React.FC = ({ children }) => {
     return [] as PostData[];
   });
 
-  // console.log(data);
-  console.log('comentário do estado: ', comments);
-
   // Load post
   useEffect(() => {
     fetch('https://jsonplaceholder.typicode.com/posts')
       .then(response => response.json())
       .then(json => {
-        setData(json);
+        setPostsData(json);
       });
   }, []);
 
@@ -76,16 +76,17 @@ const DataProvider: React.FC = ({ children }) => {
       .then(response => response.json())
       .then(json => {
         setComments(json);
+        setLoading(false);
       });
   }, []);
 
   const handleAddItem = useCallback(
     ({ title, body }) => {
       const newItem = {
-        id: data[data.length - 1].id + 1,
+        id: postsData[postsData.length - 1].id + 1,
         title,
         body,
-        userId: data[data.length - 1].userId + 1,
+        userId: postsData[postsData.length - 1].userId + 1,
       };
 
       fetch('https://jsonplaceholder.typicode.com/posts', {
@@ -97,16 +98,15 @@ const DataProvider: React.FC = ({ children }) => {
       })
         .then(response => response.json())
         .then((newPost: PostData) => {
-          console.log('Novo post: ', newPost);
-          setData(prevState => [...prevState, newPost]);
+          setPostsData(prevState => [...prevState, newPost]);
         });
     },
-    [data],
+    [postsData],
   );
 
   const handleAddWithComment = useCallback(
     ({ name, email, comment }) => {
-      const postId = data[data.length - 1].id;
+      const postId = postsData[postsData.length - 1].id;
 
       const postWithComment = {
         name,
@@ -123,31 +123,29 @@ const DataProvider: React.FC = ({ children }) => {
       })
         .then(response => response.json())
         .then(commentResponse => {
-          console.log('new post with comment: ', commentResponse);
-
           setComments(prevState => [...prevState, commentResponse]);
         });
     },
-    [data],
+    [postsData],
   );
 
   const handleDeleteItem = useCallback(id => {
     fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
       method: 'DELETE',
     });
-    setData(prevState => prevState.filter(item => item.id !== id));
+    setPostsData(prevState => prevState.filter(item => item.id !== id));
   }, []);
 
   const handleEdit = useCallback(
     (id): PostData | undefined => {
-      const post = data.find(p => p.id === id);
+      const post = postsData.find(p => p.id === id);
 
       if (post) {
         setTempor(post);
       }
       return post;
     },
-    [data],
+    [postsData],
   );
 
   const handleUpdatePost = useCallback(
@@ -168,18 +166,21 @@ const DataProvider: React.FC = ({ children }) => {
       })
         .then(response => response.json())
         .then(res => {
-          const updatedPost = data.map(post => (post.id === id ? res : post));
+          const updatedPost = postsData.map(post =>
+            post.id === id ? res : post,
+          );
 
-          setData(updatedPost);
+          setPostsData(updatedPost);
         });
     },
-    [data],
+    [postsData],
   );
 
   return (
     <PostContext.Provider
       value={{
-        posts: data,
+        loading,
+        posts: postsData,
         comments,
         tempor,
         handleAddItem,

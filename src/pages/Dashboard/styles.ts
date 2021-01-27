@@ -3,6 +3,7 @@ import styled, { css } from 'styled-components';
 import { AppBar, Table } from '@material-ui/core';
 import { lighten, shade } from 'polished';
 import CustomButton from '../../components/Button';
+import Loading from '../../components/Loading';
 
 const backgroundPost = css`
   padding: 1rem;
@@ -173,4 +174,10 @@ export const WrapperComment = styled.div`
       }
     }
   `}
+`;
+
+export const LoadContainer = styled.span`
+  margin: 1rem auto 0;
+  width: 10rem;
+  height: 10rem;
 `;
