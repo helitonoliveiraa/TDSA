@@ -17,38 +17,49 @@ interface Comments {
   name: string;
   email: string;
   body: string;
+  postId: number;
 }
 
-interface Data {
+interface CreateComment {
+  name: string;
+  email: string;
+  body: string;
+}
+
+interface PostData {
   id: number;
   title: string;
   body: string;
   userId: number;
 }
-
 interface PostContextData {
-  posts: Data[];
+  posts: PostData[];
   comments: Comments[];
+  tempor: PostData;
   handleAddItem(dataItem: Item): void;
+  handleAddWithComment(commentData: CreateComment): void;
   handleDeleteItem(id: number): void;
+  handleEdit(id: number): PostData | undefined;
+  handleUpdatePost(postData: PostData): void;
 }
 
 const PostContext = createContext<PostContextData>({} as PostContextData);
 
 const DataProvider: React.FC = ({ children }) => {
+  const [tempor, setTempor] = useState<PostData>({} as PostData);
   const [comments, setComments] = useState<Comments[]>([]);
-  const [data, setData] = useState<Data[]>(() => {
+  const [data, setData] = useState<PostData[]>(() => {
     const posts = localStorage.getItem('@test:post');
 
     if (posts) {
       return JSON.parse(posts);
     }
 
-    return [] as Data[];
+    return [] as PostData[];
   });
 
-  console.log(data);
-  // console.log(comments);
+  // console.log(data);
+  console.log('comentário do estado: ', comments);
 
   // Load post
   useEffect(() => {
@@ -56,7 +67,6 @@ const DataProvider: React.FC = ({ children }) => {
       .then(response => response.json())
       .then(json => {
         setData(json);
-        // localStorage.setItem('@test:post', JSON.stringify(json));
       });
   }, []);
 
@@ -66,7 +76,6 @@ const DataProvider: React.FC = ({ children }) => {
       .then(response => response.json())
       .then(json => {
         setComments(json);
-        // localStorage.setItem('@test:post', JSON.stringify(json));
       });
   }, []);
 
@@ -87,9 +96,36 @@ const DataProvider: React.FC = ({ children }) => {
         },
       })
         .then(response => response.json())
-        .then(newPost => {
-          console.log('Returnou da api', newPost);
+        .then((newPost: PostData) => {
+          console.log('Novo post: ', newPost);
           setData(prevState => [...prevState, newPost]);
+        });
+    },
+    [data],
+  );
+
+  const handleAddWithComment = useCallback(
+    ({ name, email, comment }) => {
+      const postId = data[data.length - 1].id;
+
+      const postWithComment = {
+        name,
+        email,
+        body: comment,
+        postId,
+      };
+      fetch(`https://jsonplaceholder.typicode.com/posts/${postId}/comments`, {
+        method: 'POST',
+        body: JSON.stringify(postWithComment),
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+      })
+        .then(response => response.json())
+        .then(commentResponse => {
+          console.log('new post with comment: ', commentResponse);
+
+          setComments(prevState => [...prevState, commentResponse]);
         });
     },
     [data],
@@ -102,13 +138,55 @@ const DataProvider: React.FC = ({ children }) => {
     setData(prevState => prevState.filter(item => item.id !== id));
   }, []);
 
+  const handleEdit = useCallback(
+    (id): PostData | undefined => {
+      const post = data.find(p => p.id === id);
+
+      if (post) {
+        setTempor(post);
+      }
+      return post;
+    },
+    [data],
+  );
+
+  const handleUpdatePost = useCallback(
+    (postData: PostData) => {
+      const { id, title, body, userId } = postData;
+
+      fetch(`https://jsonplaceholder.typicode.com/posts/${postData.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          id,
+          title,
+          body,
+          userId,
+        }),
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+      })
+        .then(response => response.json())
+        .then(res => {
+          const updatedPost = data.map(post => (post.id === id ? res : post));
+
+          setData(updatedPost);
+        });
+    },
+    [data],
+  );
+
   return (
     <PostContext.Provider
       value={{
         posts: data,
         comments,
+        tempor,
         handleAddItem,
+        handleAddWithComment,
         handleDeleteItem,
+        handleEdit,
+        handleUpdatePost,
       }}
     >
       {children}
